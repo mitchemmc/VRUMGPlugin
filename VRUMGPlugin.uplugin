@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "VR UMG Plugin",
+	"Description": "Adds a compatabilty layer for UMG and VR",
+	"Category": "Other",
+	"CreatedBy": "Mitchell McCaffrey (mitchemmc)",
+	"CreatedByURL": "http://mitchellmccaffrey.com/",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"EnabledByDefault": false,
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "VRUMGPlugin",
+			"Type": "Developer",
+			"LoadingPhase": "Default"
+		}
+	]
+}
