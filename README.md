@@ -6,7 +6,7 @@ This allows us to easily enable VR input for UMG widgets.
 
 ![VRUMG GIF](https://drive.google.com/uc?id=0B6lHn83hV_KObVVwSXlGSVlmRjA)
 
-To get started you can check out the [Example Project](#) that uses this plugin.
+To get started you can check out the [Example Project](https://github.com/mitchemmc/VRUMGPlugin-ExampleProject) that uses this plugin.
 
 # Install Instructions
 Place the entire plugin folder into your projects plugins foler "YourGame->Plugins"
