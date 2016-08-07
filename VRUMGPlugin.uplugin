@@ -17,7 +17,7 @@
 	"Modules": [
 		{
 			"Name": "VRUMGPlugin",
-			"Type": "Runtime",
+			"Type": "Developer",
 			"LoadingPhase": "Default"
 		}
 	]

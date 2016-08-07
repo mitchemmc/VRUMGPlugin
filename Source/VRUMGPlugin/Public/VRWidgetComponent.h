@@ -24,7 +24,11 @@ public:
 
 	/** Tells the Widget to ignore mouse events and use this custom hit event */
 	UFUNCTION(BlueprintCallable, Category = "VR Widget")
-	void SetCustomHit(FHitResult Hit);
+	void SetCustomHit(FHitResult Hit, bool SimulateHover);
+
+	/** Focus this widget */
+	UFUNCTION(BlueprintCallable, Category = "VR Widget")
+	void Focus(APlayerController* PC);
 
 	/** Emulates a touch press event for the given hit */
 	UFUNCTION(BlueprintCallable, Category = "VR Widget")
@@ -49,5 +53,8 @@ public:
 protected:
 	/** The hit tester to use for this component */
 	TSharedPtr<class FWidgetVRHitTester> WidgetHitTester;
+
+	/** Used for simulating hover */
+	TArray<FWidgetAndPointer> HoveredWidgets;
 
 };

@@ -2,6 +2,7 @@
 
 #include "VRUMGPluginPrivatePCH.h"
 #include "VRWidgetComponent.h"
+#include "SlateCore.h"
 #include "HittestGrid.h"
 #include "Slate/WidgetRenderer.h"
 #include "Events.h"
@@ -11,7 +12,7 @@
 DECLARE_CYCLE_STAT(TEXT("3DHitTesting"), STAT_Slate3DHitTesting, STATGROUP_Slate);
 
 /**
-* The hit tester used by all Widget Component objects.
+* The hit tester used by VR Widget Component objects.
 */
 class FWidgetVRHitTester : public ICustomHitTestPath
 {
@@ -269,9 +270,64 @@ void UVRWidgetComponent::GetLocalHit(FVector WorldHitLocation, FVector2D& OutLoc
 }
 
 
-void UVRWidgetComponent::SetCustomHit(FHitResult Hit)
+void UVRWidgetComponent::SetCustomHit(FHitResult Hit, bool SimulateHover)
 {
-	WidgetHitTester->SetCustomHit(Hit);
+	if (GetSlateWidget().IsValid()) 
+	{
+		WidgetHitTester->SetCustomHit(Hit);
+	}
+	if (SimulateHover)
+	{
+		TArray<FWidgetAndPointer> ArrangedWidgets = GetHitWidgetPath(Hit.Location, false, 1.0);
+		if (HitTestGrid.IsValid())
+		{
+			TArray<FWidgetAndPointer> WidgetsToRemove;
+			for (FWidgetAndPointer& PreviousHoveredWidget : HoveredWidgets)
+			{
+				if (!ArrangedWidgets.Contains(PreviousHoveredWidget))
+				{
+					const FPointerEvent pointerEvent = FPointerEvent(0, 0, PreviousHoveredWidget.PointerPosition->CurrentCursorPosition, PreviousHoveredWidget.PointerPosition->LastCursorPosition, false);
+					PreviousHoveredWidget.Widget->OnMouseLeave(pointerEvent);
+					WidgetsToRemove.Add(PreviousHoveredWidget);
+					// Recapture mouse after leaveing widget
+					if (GetOwnerPlayer() && GetSlateWidget().IsValid())
+					{
+						GetOwnerPlayer()->GetSlateOperations().SetUserFocus(GetSlateWidget().ToSharedRef());
+						APlayerController* Target = GetOwnerPlayer()->GetPlayerController(GetOwnerPlayer()->GetWorld());
+						if (Target != nullptr)
+						{
+							FInputModeGameOnly InputMode;
+							Target->SetInputMode(InputMode);
+						}
+					}
+				}
+			}
+			for (FWidgetAndPointer& WidgetToRemove : WidgetsToRemove) {
+				HoveredWidgets.Remove(WidgetToRemove);
+			}
+			for (FWidgetAndPointer& ArrangedWidget : ArrangedWidgets)
+			{
+				if (!HoveredWidgets.Contains(ArrangedWidget))
+				{
+					HoveredWidgets.Add(ArrangedWidget);
+					const FPointerEvent pointerEvent = FPointerEvent(0, 0, ArrangedWidget.PointerPosition->CurrentCursorPosition, ArrangedWidget.PointerPosition->LastCursorPosition, false);
+					ArrangedWidget.Widget->OnMouseEnter(ArrangedWidget.Geometry, pointerEvent);
+				}
+			}
+		}
+	}
+}
+
+void UVRWidgetComponent::Focus(APlayerController* PC)
+{
+	if (PC)
+	{
+		ULocalPlayer* const TargetPlayer = Cast< ULocalPlayer >(PC->Player);
+		if (TargetPlayer && GetSlateWidget().IsValid())
+		{
+			TargetPlayer->GetSlateOperations().SetUserFocus(GetSlateWidget().ToSharedRef());
+		}
+	}
 }
 
 void UVRWidgetComponent::EmulateTouchDown(FHitResult Hit, bool PressLeftMouseButton)
@@ -288,7 +344,6 @@ void UVRWidgetComponent::EmulateTouchDown(FHitResult Hit, bool PressLeftMouseBut
 			// Handle the reply from our mouse up to make sure we capture the mouse if we need
 			FWidgetPath widgetPath = FWidgetPath(WidgetHitTester->GetBubblePathAndVirtualCursors(FGeometry(), FVector2D(), false)); // Use empty geometry and mouse location as we are going to use our custom hit
 			FSlateApplication::Get().ProcessReply(widgetPath, reply, nullptr, &pointerEvent, 0);
-
 		}
 	}
 }
