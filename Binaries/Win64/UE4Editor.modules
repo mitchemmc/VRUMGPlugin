@@ -1,8 +1,8 @@
 {
 	"Changelist" : 2946394,
-	"BuildId" : "9192bc16-86ba-4162-a49f-66432dcc92dd",
+	"BuildId" : "d0b7c3fb-44df-4b6a-9c1d-90887314a0c0",
 	"Modules" : 
 	{
-		"VRUMGPlugin" : "UE4Editor-VRUMGPlugin.dll"
+		"VRUMGPlugin" : "UE4Editor-VRUMGPlugin-5421.dll"
 	}
 }
